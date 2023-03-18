@@ -28,4 +28,4 @@ jobs:
         run: |
           sudo add-apt-repository ppa:thierry-f/fork-michael-gruz
           sudo apt-get update
-          sudo apt-get install cndrvcups-common
+          sudo apt-get install cnrcupsiradv45253zk
