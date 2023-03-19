@@ -1,7 +1,8 @@
 import { printer } from './servers/create-ipp-server.js';
 import { findManyPrintQueue } from './print-queue/print-queue.repository.js';
 import { JobStatus } from './print-queue/job-status.enum.js';
-import ngrok, { NgrokClient } from 'ngrok';
+import { NgrokClient } from 'ngrok';
+import * as ngrok from 'ngrok';
 import axios from 'axios';
 
 interface Tunnel {
@@ -31,16 +32,14 @@ const remainQueuesCount = async () =>
   ).length;
 
 const bootstrap = async () => {
-  await ngrok.authtoken({
-    authtoken: process.env.NGROK_TOKEN,
-  });
+  await ngrok.authtoken(process.env.NGROK_AUTH_TOKEN as string);
   const ngrokClient = (await ngrok.getApi()) as NgrokClient;
   const ngrokTunnels = async (): Promise<Tunnel[]> =>
     (
       await axios.get('https://api.ngrok.com/endpoints', {
         headers: {
           'Ngrok-Version': '2',
-          Authorization: 'Bearer ' + process.env.NGROK_TOKEN,
+          Authorization: 'Bearer ' + process.env.NGROK_API_TOKEN,
         },
       })
     ).data.endpoints;
