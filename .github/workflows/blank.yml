@@ -29,6 +29,7 @@ jobs:
           NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
         run: |
           sudo add-apt-repository ppa:thierry-f/fork-michael-gruz
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
           sudo apt-get update
-          sudo apt-get install cnrcupsiradv45253zk node -y
+          sudo apt-get install cnrcupsiradv45253zk nodejs -y
           npm start
