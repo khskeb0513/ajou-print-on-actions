@@ -23,6 +23,5 @@ jobs:
           curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
           sudo apt-get update
           sudo apt-get install cnrcupsiradv45253zk nodejs -y
-          sudo service cups start
-          sudo lpadmin -p "AJOU_PRINT" -D "AJOU_PRINT" -E -m CNRCUPSIRADV45253ZK.ppd -v "http://127.0.0.1:3000"
+          sudo service cups start && sudo lpadmin -p "FILTER_PRINTER" -D "FILTER_PRINTER" -E -m CNRCUPSIRADV45253ZK.ppd -v "http://127.0.0.1:3000"
           npm start

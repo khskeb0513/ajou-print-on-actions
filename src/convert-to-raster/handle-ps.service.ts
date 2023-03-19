@@ -30,7 +30,7 @@ export const handlePsService = async (printQueue: PrintQueue) => {
     : '-o CNDuplex=DuplexFront';
   try {
     await execSync(
-      `lp -d "${Constants.PRINTER_NAME}" -o media=a4 ${duplexParameter} -U "${printQueue.queueId}" -t "${printQueue.jobName}" -c ${psPath}`,
+      `lp -d "${Constants.FILTER_PRINTER_NAME}" -o media=a4 ${duplexParameter} -U "${printQueue.queueId}" -t "${printQueue.jobName}" -c ${psPath}`,
     );
   } catch (e) {
     console.error(e);

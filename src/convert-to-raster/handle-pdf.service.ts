@@ -30,7 +30,7 @@ export const handlePdfService = async (printQueue: PrintQueue) => {
     : '-o CNDuplex=DuplexFront';
   try {
     await execSync(
-      `lp -d "${Constants.PRINTER_NAME}" -o media=a4 ${duplexParameter} -U "${printQueue.queueId}" -t "${printQueue.jobName}" -c ${pdfPath}`,
+      `lp -d "${Constants.FILTER_PRINTER_NAME}" -o media=a4 ${duplexParameter} -U "${printQueue.queueId}" -t "${printQueue.jobName}" -c ${pdfPath}`,
     );
   } catch (e) {
     console.error(e);
