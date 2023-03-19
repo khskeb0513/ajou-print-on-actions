@@ -29,14 +29,10 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
         env:
           NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
         run: |
           sudo add-apt-repository ppa:thierry-f/fork-michael-gruz
           sudo apt-get update
-          sudo apt-get install cnrcupsiradv45253zk
+          sudo apt-get install cnrcupsiradv45253zk node -y
           npm start
