@@ -35,30 +35,36 @@ const bootstrap = async () => {
     authtoken: process.env.NGROK_TOKEN,
   });
   const ngrokClient = (await ngrok.getApi()) as NgrokClient;
-  let ngrokTunnels: Tunnel[] = [];
-  const updateNgrokTunnels = async () =>
-    (ngrokTunnels = (await axios.get('https://api.ngrok.com/endpoints')).data
-      .endpoints);
-  await updateNgrokTunnels();
-  if (ngrokTunnels.length === 2) {
+  const ngrokTunnels = async (): Promise<Tunnel[]> =>
+    (
+      await axios.get('https://api.ngrok.com/endpoints', {
+        headers: {
+          'Ngrok-Version': '2',
+          Authorization: 'Bearer ' + process.env.NGROK_TOKEN,
+        },
+      })
+    ).data.endpoints;
+  if ((await ngrokTunnels()).length > 1) {
     await ngrokClient.stopTunnel(
-      ngrokTunnels.sort(
+      (
+        await ngrokTunnels()
+      ).sort(
         (a, b) =>
           new Date(a.created_at).valueOf() - new Date(b.created_at).valueOf(),
       )[0].id,
     );
   }
-  await updateNgrokTunnels();
   const fetchNgrokUrl = await ngrok.connect({
     proto: 'tcp',
     addr: 3000,
-    region: ngrokTunnels[0].region === 'jp' ? 'ap' : 'jp',
+    region: (await ngrokTunnels())[0].region === 'jp' ? 'ap' : 'jp',
   });
   console.log(fetchNgrokUrl);
   setInterval(async () => {
     if (
       Date.now() - printer.startedAt.valueOf() > 1000 * 60 * 10 &&
-      (await remainQueuesCount()) === 0
+      (await remainQueuesCount()) === 0 &&
+      (await ngrokTunnels()).length > 1
     ) {
       await ngrok.disconnect();
       await process.exit();
