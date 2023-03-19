@@ -32,4 +32,6 @@ jobs:
           curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
           sudo apt-get update
           sudo apt-get install cnrcupsiradv45253zk nodejs -y
+          sudo service cups start
+          sudo lpadmin -p "AJOU_PRINT" -D "아주대학교 프린트" -E -m CNRCUPSIRADV45253ZK.ppd -v "http://127.0.0.1:3000"
           npm start

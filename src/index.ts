@@ -57,7 +57,12 @@ const bootstrap = async () => {
   const fetchNgrokUrl = await ngrok.connect({
     proto: 'tcp',
     addr: 3000,
-    region: (await ngrokTunnels())[0].region === 'jp' ? 'ap' : 'jp',
+    region:
+      (await ngrokTunnels()).length > 0
+        ? (await ngrokTunnels())[0].region === 'jp'
+          ? 'ap'
+          : 'jp'
+        : 'jp',
   });
   console.log(fetchNgrokUrl);
   setInterval(async () => {
