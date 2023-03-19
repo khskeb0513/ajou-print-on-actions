@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:/tmp/ajou-print/db/db.sq3"
+}
+
+model PrintQueue {
+  queueId                String   @id @default(cuid())
+  jobName                String   @default(uuid())
+  nickname               String
+  length                 Int      @default(0)
+  jobStatus              String   @default("INITIAL_JOB_PASSING")
+  contentType            String
+  color                  Boolean  @default(false)
+  duplex                 Boolean  @default(false)
+  jobOriginatingUserName String   @default("ajou")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
