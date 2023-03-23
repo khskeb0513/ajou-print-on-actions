@@ -5,9 +5,12 @@ import { NgrokClient } from 'ngrok';
 import * as ngrok from 'ngrok';
 import axios from 'axios';
 
+type Region = 'us' | 'eu' | 'au' | 'ap' | 'sa' | 'jp' | 'in';
+const regions = ['jp', 'ap', 'us', 'au', 'eu', 'in', 'sa'];
+
 interface Tunnel {
   id: string;
-  region: string;
+  region: Region;
   created_at: string;
   updated_at: string;
   public_url: string;
@@ -34,7 +37,7 @@ const remainQueuesCount = async () =>
 const bootstrap = async () => {
   await ngrok.authtoken(process.env.NGROK_AUTH_TOKEN as string);
   const ngrokClient = (await ngrok.getApi()) as NgrokClient;
-  const ngrokTunnels = async (): Promise<Tunnel[]> =>
+  const fetchNgrokTunnels = async (): Promise<Tunnel[]> =>
     (
       await axios.get('https://api.ngrok.com/endpoints', {
         headers: {
@@ -43,11 +46,10 @@ const bootstrap = async () => {
         },
       })
     ).data.endpoints;
-  if ((await ngrokTunnels()).length > 1) {
+  const tunnels = await fetchNgrokTunnels();
+  if (tunnels.length > 1) {
     await ngrokClient.stopTunnel(
-      (
-        await ngrokTunnels()
-      ).sort(
+      tunnels.sort(
         (a, b) =>
           new Date(a.created_at).valueOf() - new Date(b.created_at).valueOf(),
       )[0].id,
@@ -56,24 +58,28 @@ const bootstrap = async () => {
   const fetchNgrokUrl = await ngrok.connect({
     proto: 'tcp',
     addr: 3000,
-    region:
-      (await ngrokTunnels()).length > 0
-        ? (await ngrokTunnels())[0].region === 'jp'
-          ? 'ap'
-          : 'jp'
-        : 'jp',
+    region: (regions.find(
+      (regionCode) =>
+        tunnels
+          .map((tunnel) => tunnel.region)
+          .findIndex((tunnelRegion) => tunnelRegion === regionCode) === -1,
+    ) || 'jp') as Region,
   });
   console.log(fetchNgrokUrl);
   setInterval(async () => {
-    if (
-      Date.now() - printer.startedAt.valueOf() > 1000 * 60 * 10 &&
-      (await remainQueuesCount()) === 0 &&
-      (await ngrokTunnels()).length > 1
-    ) {
-      await ngrok.disconnect();
-      await process.exit();
+    try {
+      if (
+        Date.now() - printer.startedAt.valueOf() > 1000 * 60 * 10 &&
+        (await remainQueuesCount()) === 0 &&
+        (await fetchNgrokTunnels()).length > 1
+      ) {
+        await ngrok.disconnect();
+        await process.exit();
+      }
+    } catch (e) {
+      console.error(e);
     }
-  }, 1000);
+  }, 1000 * 10);
 };
 
 printer.on('server-opened', (err) => {

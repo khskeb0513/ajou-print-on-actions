@@ -19,9 +19,9 @@ jobs:
           NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
           NGROK_API_TOKEN: ${{ secrets.NGROK_API_TOKEN }}
         run: |
-          sudo add-apt-repository ppa:thierry-f/fork-michael-gruz
           curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
           sudo apt-get update
-          sudo apt-get install cnrcupsiradv45253zk nodejs -y
+          sudo apt-get install ./drivers/cnrdrvcups-ufr2-uk_5.70-1.05_amd64.deb || sudo apt-get install ./drivers/cnrdrvcups-ufr2-uk_5.70-1.05_arm64.deb || sudo apt-get install ./drivers/cnrdrvcups-ufr2-uk_5.70-1.05_i386.deb
+          sudo apt-get install nodejs -y
           sudo service cups start && sudo lpadmin -p "FILTER_PRINTER" -D "FILTER_PRINTER" -E -m CNRCUPSIRADV45253ZK.ppd -v "http://127.0.0.1:3000"
           npm start
