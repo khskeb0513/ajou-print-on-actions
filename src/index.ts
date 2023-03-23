@@ -74,7 +74,8 @@ const bootstrap = async () => {
         (await fetchNgrokTunnels()).length > 1
       ) {
         await ngrok.disconnect();
-        await process.exit();
+        await console.log('ngrok tunnel closed');
+        await process.exit(0);
       }
     } catch (e) {
       console.error(e);
