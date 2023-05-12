@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon --watch src/ --exec ts-node src/index.ts",
     "prestart": "npm install && prisma generate && prisma migrate deploy",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "start:front-proxy": "ts-node src/front-proxy.ts"
   },
   "dependencies": {
     "@homebridge/ciao": "^1.1.5",
